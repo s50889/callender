@@ -17,6 +17,7 @@ export const EventModal: React.FC = () => {
     selectedEvent, 
     users, 
     currentDate,
+    selectedStartTime,
     currentUser,
     closeEventModal, 
     addEvent, 
@@ -71,9 +72,13 @@ export const EventModal: React.FC = () => {
       });
     } else {
       // 新規作成時のデフォルト値設定
-      const now = new Date();
-      const defaultStart = new Date(currentDate);
-      defaultStart.setHours(now.getHours(), 0, 0, 0);
+      const defaultStart = selectedStartTime || (() => {
+        const now = new Date();
+        const newDate = new Date(currentDate);
+        newDate.setHours(now.getHours(), 0, 0, 0);
+        return newDate;
+      })();
+      
       const defaultEnd = new Date(defaultStart);
       defaultEnd.setHours(defaultStart.getHours() + 1);
 
@@ -86,7 +91,7 @@ export const EventModal: React.FC = () => {
         color: colorOptions[0], // デフォルトカラーを青に
       }));
     }
-  }, [selectedEvent, currentDate]);
+  }, [selectedEvent, currentDate, selectedStartTime]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

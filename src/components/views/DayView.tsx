@@ -92,8 +92,7 @@ export const DayView: React.FC = () => {
   const handleTimeSlotClick = (hour: number) => {
     const newDate = new Date(currentDate);
     newDate.setHours(hour, 0, 0, 0);
-    setCurrentDate(newDate);
-    openEventModal();
+    openEventModal(undefined, newDate);
   };
 
   const handleEventClick = (event: any) => {

@@ -28,7 +28,7 @@ interface CalendarActions {
   loadEvents: () => Promise<void>;
   
   // Modals
-  openEventModal: (event?: CalendarEvent) => void;
+  openEventModal: (event?: CalendarEvent, startTime?: Date) => void;
   closeEventModal: () => void;
   openUserModal: () => void;
   closeUserModal: () => void;
@@ -62,6 +62,9 @@ interface ExtendedCalendarState extends CalendarState {
   // Privacy settings
   isPrivacyModeEnabled: boolean;
   
+  // Selected time for event creation
+  selectedStartTime?: Date;
+  
   // Subscriptions
   unsubscribeEvents?: () => void;
   unsubscribeUsers?: () => void;
@@ -74,6 +77,7 @@ export const useCalendarStore = create<ExtendedCalendarState & CalendarActions>(
   events: [],
   users: [],
   selectedEvent: undefined,
+  selectedStartTime: undefined,
   isEventModalOpen: false,
   isUserModalOpen: false,
   filters: {
@@ -334,17 +338,19 @@ export const useCalendarStore = create<ExtendedCalendarState & CalendarActions>(
   },
 
   // Modals
-  openEventModal: (event?: CalendarEvent) => {
+  openEventModal: (event?: CalendarEvent, startTime?: Date) => {
     set({ 
       isEventModalOpen: true, 
-      selectedEvent: event 
+      selectedEvent: event,
+      selectedStartTime: startTime
     });
   },
 
   closeEventModal: () => {
     set({ 
       isEventModalOpen: false, 
-      selectedEvent: undefined 
+      selectedEvent: undefined,
+      selectedStartTime: undefined
     });
   },
 
