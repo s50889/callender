@@ -101,7 +101,7 @@ export const EventModal: React.FC = () => {
 
     // ログインユーザーのFirestoreユーザードキュメントを取得
     const loginUserDoc = users.find(u => u.email === currentUser?.email);
-    
+
     let determinedUserId: string | undefined = loginUserDoc?.id;
 
     if (!determinedUserId && currentUser?.uid) {

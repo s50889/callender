@@ -17,6 +17,7 @@ export const MonthView: React.FC = () => {
     filters, 
     openEventModal,
     setCurrentDate,
+    setViewMode,
     currentUser,
     isPrivacyModeEnabled,
     getCurrentUserId
@@ -29,7 +30,7 @@ export const MonthView: React.FC = () => {
   const filteredEvents = events.filter(event => {
     const userVisible = filters.users.length === 0 || !filters.users.includes(event.userId);
     const categoryVisible = filters.categories.length === 0 || !filters.categories.includes(event.category);
-
+    
     if (isPrivacyModeEnabled) {
       const firestoreUserId = getCurrentUserId(); // This is the Firestore document ID from the store
       const authUid = currentUser?.uid; // This is the Firebase Auth UID
@@ -87,7 +88,7 @@ export const MonthView: React.FC = () => {
 
   const handleDayClick = (day: Date) => {
     setCurrentDate(day);
-    openEventModal();
+    setViewMode('day');
   };
 
   const handleEventClick = (event: any, e: React.MouseEvent) => {
