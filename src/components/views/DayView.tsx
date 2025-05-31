@@ -11,13 +11,12 @@ import {
 } from '../../utils/dateUtils';
 
 export const DayView: React.FC = () => {
-  const { 
+  const {
     currentDate, 
     events, 
     users, 
     filters, 
     openEventModal,
-    setCurrentDate,
     currentUser,
     isPrivacyModeEnabled,
     getCurrentUserId
