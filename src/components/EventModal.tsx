@@ -73,7 +73,7 @@ export const EventModal: React.FC = () => {
     } else {
       // 新規作成時のデフォルト値設定
       const defaultStart = selectedStartTime || (() => {
-        const now = new Date();
+      const now = new Date();
         const newDate = new Date(currentDate);
         newDate.setHours(now.getHours(), 0, 0, 0);
         return newDate;

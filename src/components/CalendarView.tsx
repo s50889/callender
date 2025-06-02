@@ -61,6 +61,7 @@ export const CalendarView: React.FC = () => {
     if (isAnimating) return;
     
     const touch = e.touches[0];
+    console.log('Touch start:', touch.clientX);
     setStartX(touch.clientX);
     setCurrentX(touch.clientX);
     setIsDragging(true);
@@ -69,31 +70,38 @@ export const CalendarView: React.FC = () => {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !startX || isAnimating) return;
     
+    e.preventDefault(); // ブラウザのスクロールを防ぐ
     const touch = e.touches[0];
     setCurrentX(touch.clientX);
     
     const deltaX = touch.clientX - startX;
-    const dampedDelta = deltaX * 0.3; // スワイプの抵抗感を調整
+    const dampedDelta = deltaX * 0.5; // スワイプの抵抗感を調整（0.3から0.5に変更）
+    console.log('Touch move:', deltaX, 'damped:', dampedDelta);
     setTranslateX(dampedDelta);
   };
 
   const handleTouchEnd = () => {
     if (!isDragging || !startX || !currentX || isAnimating) {
+      console.log('Touch end cancelled - isDragging:', isDragging, 'startX:', startX, 'currentX:', currentX);
       resetSwipe();
       return;
     }
     
     const deltaX = currentX - startX;
-    const threshold = 80; // スワイプ判定の閾値を少し下げて反応を良くする
+    const threshold = 50; // スワイプ判定の閾値を下げて反応を良くする（80から50に変更）
+    
+    console.log('Touch end - deltaX:', deltaX, 'threshold:', threshold, 'viewMode:', viewMode);
     
     setIsAnimating(true);
     
     if (Math.abs(deltaX) > threshold) {
       if (deltaX > 0) {
         // 右スワイプ: 前の期間へ移動
+        console.log('Swiping to previous period');
         prevPeriod();
       } else {
         // 左スワイプ: 次の期間へ移動
+        console.log('Swiping to next period');
         nextPeriod();
       }
     }
@@ -127,7 +135,7 @@ export const CalendarView: React.FC = () => {
     
     setCurrentX(e.clientX);
     const deltaX = e.clientX - startX;
-    const dampedDelta = deltaX * 0.3;
+    const dampedDelta = deltaX * 0.5;
     setTranslateX(dampedDelta);
   };
 
@@ -138,7 +146,7 @@ export const CalendarView: React.FC = () => {
     }
     
     const deltaX = currentX - startX;
-    const threshold = 120;
+    const threshold = 80;
     
     setIsAnimating(true);
     
@@ -167,7 +175,7 @@ export const CalendarView: React.FC = () => {
       if (!isMobile && isDragging && startX && !isAnimating) {
         setCurrentX(e.clientX);
         const deltaX = e.clientX - startX;
-        const dampedDelta = deltaX * 0.3;
+        const dampedDelta = deltaX * 0.5;
         setTranslateX(dampedDelta);
       }
     };
@@ -209,13 +217,17 @@ export const CalendarView: React.FC = () => {
           transform: `translateX(${translateX}px)`,
           transition: isAnimating ? 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)' : 'none',
           touchAction: 'pan-y',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={resetSwipe}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onMouseLeave={resetSwipe}
       >
         {renderView()}
       </div>
