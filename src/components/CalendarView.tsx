@@ -58,7 +58,7 @@ export const CalendarView: React.FC = () => {
 
   // スワイプ処理関数
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!isMobile || isAnimating) return;
+    if (isAnimating) return;
     
     const touch = e.touches[0];
     setStartX(touch.clientX);
@@ -67,7 +67,7 @@ export const CalendarView: React.FC = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isMobile || !isDragging || !startX || isAnimating) return;
+    if (!isDragging || !startX || isAnimating) return;
     
     const touch = e.touches[0];
     setCurrentX(touch.clientX);
@@ -78,7 +78,7 @@ export const CalendarView: React.FC = () => {
   };
 
   const handleTouchEnd = () => {
-    if (!isMobile || !isDragging || !startX || !currentX || isAnimating) {
+    if (!isDragging || !startX || !currentX || isAnimating) {
       resetSwipe();
       return;
     }
@@ -114,7 +114,7 @@ export const CalendarView: React.FC = () => {
 
   // マウスイベント（デスクトップ用）
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (isMobile || isAnimating) return;
+    if (isAnimating) return;
     e.preventDefault();
     
     setStartX(e.clientX);
@@ -123,7 +123,7 @@ export const CalendarView: React.FC = () => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isMobile || !isDragging || !startX || isAnimating) return;
+    if (!isDragging || !startX || isAnimating) return;
     
     setCurrentX(e.clientX);
     const deltaX = e.clientX - startX;
@@ -132,7 +132,7 @@ export const CalendarView: React.FC = () => {
   };
 
   const handleMouseUp = () => {
-    if (isMobile || !isDragging || !startX || !currentX || isAnimating) {
+    if (!isDragging || !startX || !currentX || isAnimating) {
       resetSwipe();
       return;
     }
@@ -208,6 +208,7 @@ export const CalendarView: React.FC = () => {
         style={{
           transform: `translateX(${translateX}px)`,
           transition: isAnimating ? 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)' : 'none',
+          touchAction: 'pan-y',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

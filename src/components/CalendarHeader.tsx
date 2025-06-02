@@ -120,7 +120,7 @@ export const CalendarHeader: React.FC = () => {
           </div>
 
           {/* アクションボタン */}
-          <div className="flex items-center space-x-1 lg:space-x-2">
+          <div className="flex items-center space-x-1 lg:space-x-2 flex-shrink-0 overflow-x-auto py-1">
             <button
               onClick={togglePrivacyMode}
               className={`p-2 rounded-lg transition-colors ${
@@ -150,7 +150,7 @@ export const CalendarHeader: React.FC = () => {
               className="btn-primary flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm px-2 py-1 lg:px-4 lg:py-2"
             >
               <Plus className="w-3 h-3 lg:w-4 lg:h-4" />
-              <span>新規イベント</span>
+              <span className="hidden sm:inline">新規イベント</span>
             </button>
 
             <button
