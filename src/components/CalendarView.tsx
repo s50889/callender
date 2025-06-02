@@ -29,6 +29,12 @@ export const CalendarView: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // コンポーネントマウント時のデバッグ
+  useEffect(() => {
+    console.log('CalendarView mounted, viewMode:', viewMode);
+    console.log('Container ref:', containerRef.current);
+  }, [viewMode]);
+
   const renderView = () => {
     switch (viewMode) {
       case 'month':
@@ -58,16 +64,24 @@ export const CalendarView: React.FC = () => {
 
   // スワイプ処理関数
   const handleTouchStart = (e: React.TouchEvent) => {
+    console.log('=== TOUCH START EVENT FIRED ===');
+    console.log('isAnimating:', isAnimating);
+    console.log('touches length:', e.touches.length);
+    
     if (isAnimating) return;
     
     const touch = e.touches[0];
-    console.log('Touch start:', touch.clientX);
+    console.log('Touch start:', touch.clientX, 'clientY:', touch.clientY);
     setStartX(touch.clientX);
     setCurrentX(touch.clientX);
     setIsDragging(true);
+    console.log('isDragging set to true');
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    console.log('=== TOUCH MOVE EVENT FIRED ===');
+    console.log('isDragging:', isDragging, 'startX:', startX, 'isAnimating:', isAnimating);
+    
     if (!isDragging || !startX || isAnimating) return;
     
     e.preventDefault(); // ブラウザのスクロールを防ぐ
@@ -76,13 +90,16 @@ export const CalendarView: React.FC = () => {
     
     const deltaX = touch.clientX - startX;
     const dampedDelta = deltaX * 0.5; // スワイプの抵抗感を調整（0.3から0.5に変更）
-    console.log('Touch move:', deltaX, 'damped:', dampedDelta);
+    console.log('Touch move - deltaX:', deltaX, 'damped:', dampedDelta);
     setTranslateX(dampedDelta);
   };
 
   const handleTouchEnd = () => {
+    console.log('=== TOUCH END EVENT FIRED ===');
+    console.log('isDragging:', isDragging, 'startX:', startX, 'currentX:', currentX, 'isAnimating:', isAnimating);
+    
     if (!isDragging || !startX || !currentX || isAnimating) {
-      console.log('Touch end cancelled - isDragging:', isDragging, 'startX:', startX, 'currentX:', currentX);
+      console.log('Touch end cancelled - conditions not met');
       resetSwipe();
       return;
     }
@@ -91,6 +108,7 @@ export const CalendarView: React.FC = () => {
     const threshold = 50; // スワイプ判定の閾値を下げて反応を良くする（80から50に変更）
     
     console.log('Touch end - deltaX:', deltaX, 'threshold:', threshold, 'viewMode:', viewMode);
+    console.log('Math.abs(deltaX):', Math.abs(deltaX), 'threshold comparison:', Math.abs(deltaX) > threshold);
     
     setIsAnimating(true);
     
@@ -104,6 +122,8 @@ export const CalendarView: React.FC = () => {
         console.log('Swiping to next period');
         nextPeriod();
       }
+    } else {
+      console.log('Swipe distance too small - no action taken');
     }
     
     // アニメーション完了後にリセット
@@ -189,6 +209,23 @@ export const CalendarView: React.FC = () => {
     };
   }, [isDragging, startX, isMobile, isAnimating]);
 
+  // シンプルなタッチイベント検出テスト
+  useEffect(() => {
+    const testTouchHandler = (e: TouchEvent) => {
+      console.log('*** GLOBAL TOUCH EVENT DETECTED ***', e.type);
+    };
+    
+    document.addEventListener('touchstart', testTouchHandler, { passive: false });
+    document.addEventListener('touchmove', testTouchHandler, { passive: false });
+    document.addEventListener('touchend', testTouchHandler, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchstart', testTouchHandler);
+      document.removeEventListener('touchmove', testTouchHandler);
+      document.removeEventListener('touchend', testTouchHandler);
+    };
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden min-h-0 relative">
       {/* スワイプガイド（モバイルのみ） */}
@@ -220,10 +257,22 @@ export const CalendarView: React.FC = () => {
           userSelect: 'none',
           WebkitUserSelect: 'none',
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={resetSwipe}
+        onTouchStart={(e) => {
+          console.log('*** CONTAINER TOUCH START ***', e.touches.length);
+          handleTouchStart(e);
+        }}
+        onTouchMove={(e) => {
+          console.log('*** CONTAINER TOUCH MOVE ***');
+          handleTouchMove(e);
+        }}
+        onTouchEnd={(_e) => {
+          console.log('*** CONTAINER TOUCH END ***');
+          handleTouchEnd();
+        }}
+        onTouchCancel={(_e) => {
+          console.log('*** CONTAINER TOUCH CANCEL ***');
+          resetSwipe();
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
